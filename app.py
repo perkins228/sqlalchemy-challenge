@@ -83,11 +83,9 @@ def tobs():
 def start_date(start):
     session = Session(engine)
     min_date = session.query(func.min(Measurement.date))
-    min_date_str = str(min_date[0])
-    min_date_string = re.sub("'|,","",min_date_str)
+    min_date_str = min_date.scalar()
     max_date = session.query(func.max(Measurement.date))
-    max_date_str = str(max_date[0])
-    max_date_string = re.sub("'|,", "", max_date_str)
+    max_date_str = max_date.scalar()
     min_max_average = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
         filter(Measurement.date >= start)
     
@@ -104,17 +102,16 @@ def start_date(start):
 
         return jsonify(temps_list)
 
-    return jsonify({"Error": f"Input Date {start} not valid. Date Range is {min_date_string} to {max_date_string}"}), 404
+    return jsonify({"Error": f"Input Date {start} not valid. Date Range is {min_date_str} to {max_date_str}"}), 404
 
 @app.route("/api/v1.0/<start>/<end>")
 def start_end_date(start, end):
     session = Session(engine)
     min_date = session.query(func.min(Measurement.date))
-    min_date_str = str(min_date[0])
-    min_date_string = re.sub("'|,","",min_date_str)
+    min_date_str = min_date.scalar()
     max_date = session.query(func.max(Measurement.date))
-    max_date_str = str(max_date[0])
-    max_date_string = re.sub("'|,", "", max_date_str)
+    max_date_str = max_date.scalar()
+
 
     min_max_avg = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
         filter(Measurement.date >= start).\
@@ -134,7 +131,7 @@ def start_end_date(start, end):
 
         return jsonify(temp_list)
 
-    return jsonify({"Error": f"Input Date(s) not valid. Date Range is {min_date_string} to {max_date_string}"}), 404
+    return jsonify({"Error": f"Input Date(s) not valid. Date Range is {min_date_str} to {max_date_str}"}), 404
 
 if __name__ == "__main__":
     app.run(debug=True)
